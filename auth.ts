@@ -40,11 +40,117 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       return true;
     },
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      // Handle OAuth sign-in: create or update user and account in database
+      if (account && (account.provider === "google" || account.provider === "github")) {
+        try {
+          // Check if account already exists
+          const existingAccount = await prisma.account.findUnique({
+            where: {
+              provider_providerAccountId: {
+                provider: account.provider,
+                providerAccountId: String(account.providerAccountId),
+              },
+            },
+            include: { user: true },
+          });
+
+          if (existingAccount) {
+            // Account exists, update user info if needed
+            if (user.email && (user.name !== existingAccount.user.name || user.image !== existingAccount.user.image)) {
+              await prisma.user.update({
+                where: { id: existingAccount.userId },
+                data: {
+                  name: user.name || existingAccount.user.name,
+                  image: user.image || existingAccount.user.image,
+                  emailVerified: new Date(),
+                },
+              });
+            }
+            return true;
+          }
+
+          // Check if user with this email already exists
+          let dbUser = user.email
+            ? await prisma.user.findUnique({
+                where: { email: user.email },
+              })
+            : null;
+
+          if (!dbUser) {
+            // Create new user
+            dbUser = await prisma.user.create({
+              data: {
+                email: user.email!,
+                name: user.name || null,
+                image: user.image || null,
+                password: "", // OAuth users don't have passwords
+                emailVerified: new Date(),
+                role: "USER",
+              },
+            });
+          } else {
+            // Update existing user with OAuth info
+            dbUser = await prisma.user.update({
+              where: { id: dbUser.id },
+              data: {
+                name: user.name || dbUser.name,
+                image: user.image || dbUser.image,
+                emailVerified: new Date(),
+              },
+            });
+          }
+
+          // Create account record
+          await prisma.account.create({
+            data: {
+              userId: dbUser.id,
+              type: account.type,
+              provider: account.provider,
+              providerAccountId: String(account.providerAccountId),
+              refresh_token: account.refresh_token || null,
+              access_token: account.access_token || null,
+              expires_at: account.expires_at || null,
+              token_type: account.token_type || null,
+              scope: account.scope || null,
+              id_token: account.id_token || null,
+              session_state: account.session_state ? String(account.session_state) : null,
+            },
+          });
+
+          return true;
+        } catch (error) {
+          console.error("Error handling OAuth sign-in:", error);
+          return false;
+        }
+      }
+
+      // For credentials provider, allow sign-in
+      return true;
+    },
+    async jwt({ token, user, account }) {
+      // Initial sign in
       if (user) {
         token.role = user.role;
         token.id = user.id;
       }
+
+      // For OAuth, fetch user from database to get role
+      if (account && (account.provider === "google" || account.provider === "github")) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email as string },
+          });
+
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.id = dbUser.id;
+          }
+        } catch (error) {
+          console.error("Error fetching user in JWT callback:", error);
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
@@ -94,4 +200,3 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
 });
-

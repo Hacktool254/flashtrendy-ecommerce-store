@@ -79,25 +79,25 @@
   - [X] Configure NextAuth.js v5 (beta) with credentials provider
   - [X] Set up email/password authentication
   - [X] Configure OAuth providers (Google, GitHub)
-  - [X] Implement JWT handling
+  - [X] Implement JWT handlingm
   - [X] Create protected route middleware
   - [X] Set up admin role-based access control
 
 ### 3. Core Features - Customer Side [ ]
 
-- [ ] Home Layout:
-  - [ ] Create `(home)` folder in `app` directory
-  - [ ] Header component with:
-    - Logo and branding
-    - Search bar with autocomplete
-    - Navigation menu (categories)
-    - User account dropdown
-    - Shopping cart icon with badge
-  - [ ] Footer component with:
-    - Links to pages
-    - Social media icons
-    - Newsletter signup
-    - Contact information
+- [X] Home Layout:
+  - [X] Create `(home)` folder in `app` directory
+  - [X] Header component with:
+    - [X] Logo and branding
+    - [X] Search bar with autocomplete
+    - [X] Navigation menu (categories)
+    - [X] User account dropdown
+    - [X] Shopping cart icon with badge
+  - [X] Footer component with:
+    - [X] Links to pages
+    - [X] Social media icons
+    - [X] Newsletter signup
+    - [X] Contact information
 - [ ] Homepage:
   - [ ] Hero banner carousel with featured products
   - [ ] Featured categories section

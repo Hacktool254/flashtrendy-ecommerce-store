@@ -1,4 +1,9 @@
-export { auth as middleware } from "@/auth";
+// Temporarily disabled to test Edge Runtime issues
+// This empty middleware just passes through without doing anything
+export function middleware(request: any) {
+  // No-op: just pass through
+  return;
+}
 
 export const config = {
   matcher: [
