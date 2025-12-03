@@ -98,12 +98,12 @@
     - [X] Social media icons
     - [X] Newsletter signup
     - [X] Contact information
-- [ ] Homepage:
-  - [ ] Hero banner carousel with featured products
-  - [ ] Featured categories section
-  - [ ] Latest products grid
-  - [ ] Best sellers section
-  - [ ] Special offers/deals section
+- [X] Homepage:
+  - [X] Hero banner carousel with featured products
+  - [X] Featured categories section
+  - [X] Latest products grid
+  - [X] Best sellers section
+  - [X] Special offers/deals section
 - [ ] Products Catalog:
   - [ ] Create `/products` route
   - [ ] Sidebar with:
