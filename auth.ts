@@ -1,10 +1,8 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
-import { authConfig } from "./auth.config";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 
@@ -13,13 +11,50 @@ const loginSchema = z.object({
   password: z.string().min(6),
 });
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  ...authConfig,
-  // Only use adapter for OAuth providers, not for credentials
-  adapter: process.env.GOOGLE_CLIENT_ID || process.env.GITHUB_CLIENT_ID 
-    ? PrismaAdapter(prisma) as any 
-    : undefined,
+export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
+  pages: {
+    signIn: "/login",
+    signOut: "/logout",
+  },
+  callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnAdmin = nextUrl.pathname.startsWith("/admin");
+      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+      const isOnCheckout = nextUrl.pathname.startsWith("/checkout");
+
+      if (isOnAdmin) {
+        if (isLoggedIn && auth?.user?.role === "ADMIN") return true;
+        return false; // Redirect unauthenticated users to login page
+      }
+
+      if (isOnDashboard || isOnCheckout) {
+        if (isLoggedIn) return true;
+        return false; // Redirect unauthenticated users to login page
+      }
+
+      if (isLoggedIn && (nextUrl.pathname === "/login" || nextUrl.pathname === "/register")) {
+        return Response.redirect(new URL("/dashboard", nextUrl));
+      }
+
+      return true;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.role = token.role as string;
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
   providers: [
     Credentials({
       async authorize(credentials) {

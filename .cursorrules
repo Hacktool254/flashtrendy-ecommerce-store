@@ -75,13 +75,13 @@
   - [X] Address model (id, userId, street, city, state, zipCode, country, isDefault)
 - [X] Run Prisma migrations (`npx prisma migrate dev`)
 - [X] Generate Prisma Client (`npx prisma generate`)
-- [ ] Implement NextAuth.js authentication:
-  - [ ] Configure NextAuth.js v5 (beta) with credentials provider
-  - [ ] Set up email/password authentication
-  - [ ] Configure OAuth providers (Google, GitHub)
-  - [ ] Implement JWT handling
-  - [ ] Create protected route middleware
-  - [ ] Set up admin role-based access control
+- [X] Implement NextAuth.js authentication:
+  - [X] Configure NextAuth.js v5 (beta) with credentials provider
+  - [X] Set up email/password authentication
+  - [X] Configure OAuth providers (Google, GitHub)
+  - [X] Implement JWT handling
+  - [X] Create protected route middleware
+  - [X] Set up admin role-based access control
 
 ### 3. Core Features - Customer Side [ ]
 
