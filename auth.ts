@@ -1,49 +1,30 @@
 import NextAuth from "next-auth";
-import { prisma } from "@/lib/prisma";
-import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import GitHub from "next-auth/providers/github";
+import authConfig from "./auth.config";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+
+// Lazy-load Prisma to avoid importing it in Edge Runtime
+async function getPrisma() {
+  const { prisma } = await import("@/lib/prisma");
+  return prisma;
+}
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 });
 
+// Full Auth.js instance with database support (for API routes, pages, etc.)
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/login",
-    signOut: "/logout",
-  },
+  ...authConfig,
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isOnAdmin = nextUrl.pathname.startsWith("/admin");
-      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
-      const isOnCheckout = nextUrl.pathname.startsWith("/checkout");
-
-      if (isOnAdmin) {
-        if (isLoggedIn && auth?.user?.role === "ADMIN") return true;
-        return false; // Redirect unauthenticated users to login page
-      }
-
-      if (isOnDashboard || isOnCheckout) {
-        if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
-      }
-
-      if (isLoggedIn && (nextUrl.pathname === "/login" || nextUrl.pathname === "/register")) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
-      }
-
-      return true;
-    },
+    ...authConfig.callbacks,
+    // Add database-specific callbacks here
     async signIn({ user, account, profile }) {
       // Handle OAuth sign-in: create or update user and account in database
       if (account && (account.provider === "google" || account.provider === "github")) {
         try {
+          const prisma = await getPrisma();
           // Check if account already exists
           const existingAccount = await prisma.account.findUnique({
             where: {
@@ -70,18 +51,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return true;
           }
 
+          // OAuth providers must provide an email
+          if (!user.email) {
+            console.error(`OAuth provider ${account.provider} did not provide an email address`);
+            return false;
+          }
+
           // Check if user with this email already exists
-          let dbUser = user.email
-            ? await prisma.user.findUnique({
-                where: { email: user.email },
-              })
-            : null;
+          let dbUser = await prisma.user.findUnique({
+            where: { email: user.email },
+          });
 
           if (!dbUser) {
             // Create new user
             dbUser = await prisma.user.create({
               data: {
-                email: user.email!,
+                email: user.email,
                 name: user.name || null,
                 image: user.image || null,
                 password: "", // OAuth users don't have passwords
@@ -101,9 +86,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             });
           }
 
-          // Create account record
-          await prisma.account.create({
-            data: {
+          // Use upsert to handle race conditions
+          await prisma.account.upsert({
+            where: {
+              provider_providerAccountId: {
+                provider: account.provider,
+                providerAccountId: String(account.providerAccountId),
+              },
+            },
+            update: {
+              refresh_token: account.refresh_token || null,
+              access_token: account.access_token || null,
+              expires_at: account.expires_at || null,
+              token_type: account.token_type || null,
+              scope: account.scope || null,
+              id_token: account.id_token || null,
+              session_state: account.session_state ? String(account.session_state) : null,
+            },
+            create: {
               userId: dbUser.id,
               type: account.type,
               provider: account.provider,
@@ -129,15 +129,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true;
     },
     async jwt({ token, user, account }) {
-      // Initial sign in
-      if (user) {
-        token.role = user.role;
-        token.id = user.id;
-      }
+      // Call the base JWT callback first
+      const baseToken = await authConfig.callbacks?.jwt?.({ token, user, account } as any);
+      if (baseToken) token = baseToken as any;
 
-      // For OAuth, fetch user from database to get role
+      // Add database-specific logic for OAuth
       if (account && (account.provider === "google" || account.provider === "github")) {
         try {
+          const prisma = await getPrisma();
           const dbUser = await prisma.user.findUnique({
             where: { email: token.email as string },
           });
@@ -145,29 +144,35 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (dbUser) {
             token.role = dbUser.role;
             token.id = dbUser.id;
+          } else {
+            console.error(`User with email ${token.email} not found in database during JWT callback`);
+            // Don't modify token on error - keep existing values
           }
         } catch (error) {
           console.error("Error fetching user in JWT callback:", error);
+          // Don't modify token on error - keep existing values
         }
       }
 
       return token;
     },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as string;
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
   },
   providers: [
-    Credentials({
+    // Override Credentials provider with database support
+    {
+      id: "credentials",
+      name: "Credentials",
+      type: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
       async authorize(credentials) {
         const parsedCredentials = loginSchema.safeParse(credentials);
 
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
+          const prisma = await getPrisma();
 
           const user = await prisma.user.findUnique({
             where: { email },
@@ -189,14 +194,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         return null;
       },
-    }),
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    }),
+    },
+    ...(authConfig.providers?.filter((p: any) => p.id !== "credentials") || []),
   ],
 });

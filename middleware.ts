@@ -1,8 +1,10 @@
-// Temporarily disabled to test Edge Runtime issues
-// This empty middleware just passes through without doing anything
-export function middleware(request: any) {
-  // No-op: just pass through
-  return;
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+// Minimal middleware - no Prisma/database imports
+// Route protection is handled in individual pages/components
+export function middleware(_req: NextRequest) {
+  return NextResponse.next();
 }
 
 export const config = {
