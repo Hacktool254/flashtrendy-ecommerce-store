@@ -1,21 +1,18 @@
 import { defineConfig } from "prisma/config";
 import { config } from "dotenv";
 import { resolve } from "path";
-import { existsSync, readFileSync } from "fs";
+import { existsSync } from "fs";
 
-// Load .env file from project root
+// Load .env file from project root if it exists (for local development)
+// On Vercel, environment variables are set directly, so .env file is not needed
 const envPath = resolve(process.cwd(), ".env");
-const result = config({ path: envPath });
+if (existsSync(envPath)) {
+  config({ path: envPath });
+}
 
+// Only throw error if DATABASE_URL is missing (will be set by Vercel in production)
 if (!process.env.DATABASE_URL) {
-  if (!existsSync(envPath)) {
-    throw new Error(`.env file not found at: ${envPath}`);
-  }
-  const envContent = readFileSync(envPath, "utf-8");
-  if (!envContent.includes("DATABASE_URL")) {
-    throw new Error(`DATABASE_URL not found in .env file. File content:\n${envContent.substring(0, 200)}`);
-  }
-  throw new Error(`DATABASE_URL is empty or not properly formatted in .env file. Make sure it's in the format: DATABASE_URL="postgresql://..."`);
+  throw new Error("DATABASE_URL environment variable is not set. Make sure it's configured in your environment variables.");
 }
 
 export default defineConfig({
