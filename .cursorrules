@@ -47,7 +47,7 @@
 - [X] Configure ESLint
 - [X] Configure Prettier
 - [X] Install and configure dependencies:
-  - [ ] Shadcn UI components (`npx shadcn@latest init`)
+  - [X] Shadcn UI components (`npx shadcn@latest init`)
   - [X] Lucide icons (`npm install lucide-react`)
   - [X] Zod for validation (`npm install zod`)
   - [X] Zustand for state management (`npm install zustand`)
@@ -55,26 +55,26 @@
   - [X] Resend for emails (`npm install resend`)
   - [X] Uploadthing for file uploads (`npm install uploadthing @uploadthing/react`)
   - [X] Prisma ORM (`npm install prisma @prisma/client`)
-  - [ ] PostgreSQL database (set up connection string)
+  - [X] PostgreSQL database (set up connection string)
   - [X] NextAuth.js beta (`npm install next-auth@beta`)
   - [X] Stripe for payments (`npm install stripe @stripe/stripe-js`)
 
 ### 2. Database and Authentication [ ]
 
-- [ ] Set up PostgreSQL database:
-  - [ ] Create database instance (local or cloud)
-  - [ ] Configure connection string in `.env`
-- [ ] Configure Prisma schema:
-  - [ ] User model (id, email, name, password, role, createdAt, updatedAt)
-  - [ ] Product model (id, name, description, price, images, stock, categoryId, createdAt, updatedAt)
-  - [ ] Category model (id, name, slug, description, createdAt, updatedAt)
-  - [ ] Order model (id, userId, total, status, shippingAddress, createdAt, updatedAt)
-  - [ ] OrderItem model (id, orderId, productId, quantity, price)
-  - [ ] Review model (id, userId, productId, rating, comment, createdAt)
-  - [ ] Cart model (id, userId, productId, quantity, createdAt, updatedAt)
-  - [ ] Address model (id, userId, street, city, state, zipCode, country, isDefault)
-- [ ] Run Prisma migrations (`npx prisma migrate dev`)
-- [ ] Generate Prisma Client (`npx prisma generate`)
+- [X] Set up PostgreSQL database:
+  - [X] Create database instance (local or cloud)
+  - [X] Configure connection string in `.env`
+- [X] Configure Prisma schema:
+  - [X] User model (id, email, name, password, role, createdAt, updatedAt)
+  - [X] Product model (id, name, description, price, images, stock, categoryId, createdAt, updatedAt)
+  - [X] Category model (id, name, slug, description, createdAt, updatedAt)
+  - [X] Order model (id, userId, total, status, shippingAddress, createdAt, updatedAt)
+  - [X] OrderItem model (id, orderId, productId, quantity, price)
+  - [X] Review model (id, userId, productId, rating, comment, createdAt)
+  - [X] Cart model (id, userId, productId, quantity, createdAt, updatedAt)
+  - [X] Address model (id, userId, street, city, state, zipCode, country, isDefault)
+- [X] Run Prisma migrations (`npx prisma migrate dev`)
+- [X] Generate Prisma Client (`npx prisma generate`)
 - [ ] Implement NextAuth.js authentication:
   - [ ] Configure NextAuth.js v5 (beta) with credentials provider
   - [ ] Set up email/password authentication
