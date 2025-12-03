@@ -1,22 +1,15 @@
 import type { NextAuthConfig } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import GitHub from "next-auth/providers/github";
-import { z } from "zod";
 
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-// Common Auth.js configuration without database adapter
+// Common Auth.js configuration without database adapter or providers
 // This can be used in Edge Runtime (middleware)
+// Providers are defined in auth.ts where database access is available
 export default {
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
     signOut: "/logout",
   },
+  providers: [], // Empty array - providers are in auth.ts
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
@@ -56,16 +49,5 @@ export default {
       return session;
     },
   },
-  providers: [
-    // OAuth providers only - Credentials provider is added in auth.ts with database support
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    }),
-  ],
 } satisfies NextAuthConfig;
 
