@@ -70,35 +70,56 @@ export default async function Home() {
     };
   });
 
+  const banners = [
+    {
+      id: 1,
+      image: "/images/banner1.jpg",
+      title: "New Collection",
+      subtitle: "Discover the latest trends in fashion",
+    },
+    {
+      id: 2,
+      image: "/images/banner2.jpg",
+      title: "Summer Sale",
+      subtitle: "Up to 50% off on selected items",
+    },
+    {
+      id: 3,
+      image: "/images/banner3.jpg",
+      title: "Premium Quality",
+      subtitle: "Shop the best products at unbeatable prices",
+    },
+  ];
+
   return (
     <div className="space-y-12 pb-12">
       {/* Hero Banner Carousel */}
-      <section className="relative">
+      <section className="container mx-auto px-4">
         <Carousel className="w-full">
           <CarouselContent>
-            {featuredWithRatings.slice(0, 3).map((product) => (
-              <CarouselItem key={product.id} className="relative">
+            {banners.map((banner) => (
+              <CarouselItem key={banner.id} className="relative">
                 <div className="relative h-[500px] md:h-[600px] overflow-hidden bg-muted rounded-lg">
                   <div
                     className="absolute inset-0 bg-cover bg-center"
                     style={{
-                      backgroundImage: `url(${product.images[0] || "/placeholder-product.jpg"})`,
+                      backgroundImage: `url(${banner.image})`,
                     }}
                   >
                     <div className="absolute inset-0 bg-black/40" />
                   </div>
-                  <div className="relative z-10 h-full flex items-center">
-                    <div className="container mx-auto px-4">
-                      <div className="max-w-2xl text-white">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-4">
-                          {product.name}
+                  <div className="relative z-10 h-full flex items-end">
+                    <div className="px-4 pb-8 md:pb-12">
+                      <div className="text-white">
+                        <h1 className="text-2xl md:text-3xl font-bold mb-4">
+                          {banner.title}
                         </h1>
-                        <p className="text-xl md:text-2xl mb-6 text-white/90">
-                          Discover the latest trends
+                        <p className="text-base md:text-lg mb-6 text-white/90">
+                          {banner.subtitle}
                         </p>
                         <div className="flex gap-4">
                           <Button asChild size="lg">
-                            <Link href={`/products/${product.id}`}>
+                            <Link href="/products">
                               Shop Now
                               <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>

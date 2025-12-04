@@ -104,44 +104,44 @@
   - [X] Latest products grid
   - [X] Best sellers section
   - [X] Special offers/deals section
-- [ ] Products Catalog:
-  - [ ] Create `/products` route
-  - [ ] Sidebar with:
-    - Category filters
-    - Price range filter
-    - Brand filter
-    - Rating filter
-  - [ ] Search functionality with query params
-  - [ ] Product grid with:
-    - Product cards (image, name, price, rating)
-    - Hover effects
-    - Quick view option
-  - [ ] Pagination component
-  - [ ] Sort options (price, rating, newest)
-- [ ] Product Detail Pages:
-  - [ ] Create `/products/[id]` dynamic route
-  - [ ] Image gallery with:
-    - Main image display
-    - Thumbnail navigation
-    - Zoom functionality
-  - [ ] Product information section:
-    - Title and brand
-    - Price and discount
-    - Description
-    - Stock status indicator
-    - Size/variant selector
-    - Quantity selector
-    - Add to cart button
-    - Buy now button
-  - [ ] Reviews and ratings section:
-    - Display existing reviews with pagination
-    - Average rating display
-    - Review form for authenticated users
-    - Star rating component (using Shadcn)
-    - Review moderation
-  - [ ] Related products section:
-    - Products from same category
-    - Product card carousel (using Shadcn carousel)
+- [X] Products Catalog:
+  - [X] Create `/products` route
+  - [X] Sidebar with:
+    - [X] Category filters
+    - [X] Price range filter
+    - [ ] Brand filter (skipped - no brand field in Product model)
+    - [X] Rating filter
+  - [X] Search functionality with query params
+  - [X] Product grid with:
+    - [X] Product cards (image, name, price, rating)
+    - [X] Hover effects
+    - [ ] Quick view option (optional - can be added later)
+  - [X] Pagination component
+  - [X] Sort options (price, rating, newest)
+- [X] Product Detail Pages:
+  - [X] Create `/products/[id]` dynamic route
+  - [X] Image gallery with:
+    - [X] Main image display
+    - [X] Thumbnail navigation
+    - [X] Zoom functionality
+  - [X] Product information section:
+    - [X] Title and brand
+    - [X] Price and discount
+    - [X] Description
+    - [X] Stock status indicator
+    - [ ] Size/variant selector (skipped - no variant field in Product model)
+    - [X] Quantity selector
+    - [X] Add to cart button
+    - [X] Buy now button
+  - [X] Reviews and ratings section:
+    - [X] Display existing reviews with pagination
+    - [X] Average rating display
+    - [X] Review form for authenticated users
+    - [X] Star rating component (using Shadcn)
+    - [ ] Review moderation (can be added in admin dashboard later)
+  - [X] Related products section:
+    - [X] Products from same category
+    - [X] Product card carousel (using Shadcn carousel)
 - [ ] Shopping Cart:
   - [ ] Create `/cart` route
   - [ ] Cart page with:

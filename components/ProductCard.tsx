@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Star, ShoppingCart } from "lucide-react";
 
 interface ProductCardProps {
   id: string;
@@ -26,9 +29,16 @@ export function ProductCard({
   const mainImage = images[0] || "/placeholder-product.jpg";
   const inStock = stock > 0;
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // TODO: Implement add to cart functionality
+    console.log("Add to cart:", id);
+  };
+
   return (
-    <Link href={`/products/${id}`}>
-      <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="group overflow-hidden hover:shadow-lg transition-shadow">
+      <Link href={`/products/${id}`}>
         <CardHeader className="p-0 relative aspect-square overflow-hidden bg-muted">
           <Image
             src={mainImage}
@@ -48,22 +58,50 @@ export function ProductCard({
             {name}
           </h3>
           <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-0.5">
+              {[...Array(5)].map((_, index) => {
+                const starValue = index + 1;
+                const isFilled = rating >= starValue;
+                const isHalfFilled = rating >= starValue - 0.5 && rating < starValue;
+                
+                return (
+                  <Star
+                    key={index}
+                    className={`h-4 w-4 ${
+                      isFilled
+                        ? "fill-yellow-400 text-yellow-400"
+                        : isHalfFilled
+                        ? "fill-yellow-400/50 text-yellow-400"
+                        : "fill-none text-gray-300"
+                    }`}
+                  />
+                );
+              })}
+            </div>
             {rating > 0 && (
               <>
-                <div className="flex items-center">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="ml-1 text-sm font-medium">{rating.toFixed(1)}</span>
-                </div>
+                <span className="ml-1 text-sm font-medium">{rating.toFixed(1)}</span>
                 {reviewCount > 0 && (
                   <span className="text-sm text-muted-foreground">({reviewCount})</span>
                 )}
               </>
             )}
           </div>
-          <p className="text-2xl font-bold text-primary">${price.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-primary mb-4">${price.toFixed(2)}</p>
         </CardContent>
-      </Card>
-    </Link>
+      </Link>
+      <CardFooter className="p-4 pt-0">
+        <Button
+          onClick={handleAddToCart}
+          disabled={!inStock}
+          className="w-full"
+          size="sm"
+        >
+          <ShoppingCart className="h-4 w-4 mr-2" />
+          Add to Cart
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
 
