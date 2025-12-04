@@ -6,6 +6,10 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, ShoppingCart } from "lucide-react";
+import { useCartStore } from "@/store/cart-store";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 interface ProductCardProps {
   id: string;
@@ -28,12 +32,54 @@ export function ProductCard({
 }: ProductCardProps) {
   const mainImage = images[0] || "/placeholder-product.jpg";
   const inStock = stock > 0;
+  const { addItem } = useCartStore();
+  const [isAdding, setIsAdding] = useState(false);
+  const { toast } = useToast();
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // TODO: Implement add to cart functionality
-    console.log("Add to cart:", id);
+    
+    if (!inStock) return;
+
+    setIsAdding(true);
+    try {
+      const result = await addItem({
+        productId: id,
+        name,
+        price,
+        image: mainImage,
+        quantity: 1,
+        stock,
+      });
+
+      if (result?.success) {
+        toast({
+          title: "Added to cart",
+          description: `${name} has been added to your cart.`,
+          action: (
+            <ToastAction altText="View cart" asChild>
+              <Link href="/cart">View Cart</Link>
+            </ToastAction>
+          ),
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result?.error || "Failed to add item to cart. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   return (
@@ -93,12 +139,12 @@ export function ProductCard({
       <CardFooter className="p-4 pt-0">
         <Button
           onClick={handleAddToCart}
-          disabled={!inStock}
+          disabled={!inStock || isAdding}
           className="w-full"
           size="sm"
         >
           <ShoppingCart className="h-4 w-4 mr-2" />
-          Add to Cart
+          {isAdding ? "Adding..." : "Add to Cart"}
         </Button>
       </CardFooter>
     </Card>

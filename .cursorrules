@@ -33,7 +33,7 @@
 
 ## Scratchpad
 
-### 1. Project Setup and Configuration [ ]
+### 1. Project Setup and Configuration [X]
 
 - [X] Initialize Next.js project with TypeScript (Next.js 14.2.5)
 - [X] Set up project structure and folders:
@@ -59,7 +59,7 @@
   - [X] NextAuth.js beta (`npm install next-auth@beta`)
   - [X] Stripe for payments (`npm install stripe @stripe/stripe-js`)
 
-### 2. Database and Authentication [ ]
+### 2. Database and Authentication [X]
 
 - [X] Set up PostgreSQL database:
   - [X] Create database instance (local or cloud)
@@ -83,7 +83,7 @@
   - [X] Create protected route middleware
   - [X] Set up admin role-based access control
 
-### 3. Core Features - Customer Side [ ]
+### 3. Core Features - Customer Side [IN PROGRESS]
 
 - [X] Home Layout:
   - [X] Create `(home)` folder in `app` directory
@@ -142,15 +142,15 @@
   - [X] Related products section:
     - [X] Products from same category
     - [X] Product card carousel (using Shadcn carousel)
-- [ ] Shopping Cart:
+- [ ] Shopping Cart: ⬅️ **NEXT STEP**
   - [ ] Create `/cart` route
   - [ ] Cart page with:
-    - List of cart items
-    - Quantity update controls
-    - Remove item functionality
-    - Price calculations (subtotal, tax, shipping, total)
-    - Continue shopping link
-    - Proceed to checkout button
+    - [ ] List of cart items
+    - [ ] Quantity update controls
+    - [ ] Remove item functionality
+    - [ ] Price calculations (subtotal, tax, shipping, total)
+    - [ ] Continue shopping link
+    - [ ] Proceed to checkout button
   - [ ] Cart persistence using Zustand store
   - [ ] Cart sidebar/drawer component
 - [ ] Checkout Process:

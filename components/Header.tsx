@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SearchBar } from "@/components/SearchBar";
 import { UserAccountDropdown } from "@/components/UserAccountDropdown";
+import { CartDrawer } from "@/components/CartDrawer";
+import { CartBadge } from "@/components/CartBadge";
 
 export default function Header() {
   return (
@@ -33,16 +35,14 @@ export default function Header() {
             {/* User Account Dropdown */}
             <UserAccountDropdown />
 
-            {/* Shopping Cart */}
-            <Link href="/cart">
+            {/* Shopping Cart - Drawer on mobile, link on desktop */}
+            <div className="sm:hidden">
+              <CartDrawer />
+            </div>
+            <Link href="/cart" className="hidden sm:block">
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingCart className="h-5 w-5" />
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                >
-                  0
-                </Badge>
+                <CartBadge />
               </Button>
             </Link>
 

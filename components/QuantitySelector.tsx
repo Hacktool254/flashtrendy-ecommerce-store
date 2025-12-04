@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Minus, Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface QuantitySelectorProps {
   min?: number;
   max?: number;
   defaultValue?: number;
+  value?: number;
   onQuantityChange?: (quantity: number) => void;
 }
 
@@ -17,9 +18,17 @@ export function QuantitySelector({
   min = 1,
   max = 99,
   defaultValue = 1,
+  value,
   onQuantityChange,
 }: QuantitySelectorProps) {
-  const [quantity, setQuantity] = useState(defaultValue);
+  const [quantity, setQuantity] = useState(value ?? defaultValue);
+
+  // Sync with external value changes
+  useEffect(() => {
+    if (value !== undefined) {
+      setQuantity(value);
+    }
+  }, [value]);
 
   const handleDecrease = () => {
     if (quantity > min) {

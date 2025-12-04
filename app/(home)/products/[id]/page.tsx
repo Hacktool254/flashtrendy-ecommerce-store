@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Star } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductImageGallery } from "@/components/ProductImageGallery";
-import { QuantitySelector } from "@/components/QuantitySelector";
 import { ReviewForm } from "@/components/ReviewForm";
+import { ProductAddToCart } from "@/components/ProductAddToCart";
 import {
   Carousel,
   CarouselContent,
@@ -136,32 +136,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Quantity Selector and Actions */}
-          <div className="space-y-4 pt-4 border-t">
-            {inStock ? (
-              <>
-                <div className="flex items-center gap-4">
-                  <label className="font-semibold">Quantity:</label>
-                  <QuantitySelector
-                    min={1}
-                    max={product.stock}
-                    defaultValue={1}
-                  />
-                </div>
-                <div className="flex gap-4">
-                  <Button size="lg" className="flex-1">
-                    Add to Cart
-                  </Button>
-                  <Button size="lg" variant="outline" className="flex-1">
-                    Buy Now
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <Button size="lg" disabled className="w-full">
-                Out of Stock
-              </Button>
-            )}
-          </div>
+          <ProductAddToCart
+            productId={product.id}
+            name={product.name}
+            price={price}
+            image={product.images[0] || "/placeholder-product.jpg"}
+            stock={product.stock}
+          />
         </div>
       </div>
 
