@@ -8,9 +8,9 @@ Create development steps in `Scratchpad` of `.cursorrules` to create an ecommerc
 
 We already done these steps:
 
-- [ ] Initialize Next.js 15 project with TypeScript
-- [ ] Set up project structure and folders
-- [ ] Configure ESLint and Prettier
+- [x] Initialize Next.js 15 project with TypeScript
+- [x] Set up project structure and folders
+- [x] Configure ESLint and Prettier
 
 Make them done and Start from this step:
 Install and configure dependencies
@@ -19,11 +19,11 @@ Install and configure dependencies
 
 we already set DATABASE_URL in .env, Make this step done
 
-- [ ] Set up PostgreSQL database
+- [x] Set up PostgreSQL database
 
 Start from this step
 
-- [ ] Configure Prisma schema:
+- [x] Configure Prisma schema:
   - User model
   - Product model
   - Category model
@@ -33,7 +33,7 @@ Start from this step
 
 ## Prompt 4
 
-- [ ] Implement NextAuth.js authentication:
+- [x] Implement NextAuth.js authentication:
   - Email/Password
   - OAuth providers (Google, GitHub)
   - JWT handling
