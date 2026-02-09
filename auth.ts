@@ -1,58 +1,31 @@
 import NextAuth from "next-auth";
-import { prisma } from "@/lib/prisma";
+import authConfig from "./auth.config";
 import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import GitHub from "next-auth/providers/github";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+
+// Lazy-load Prisma to avoid importing it in Edge Runtime
+async function getPrisma() {
+  const { prisma } = await import("@/lib/prisma");
+  return prisma;
+}
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 });
 
+// Full Auth.js instance with database support (for API routes, pages, etc.)
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/login",
-    signOut: "/logout",
-  },
+  ...authConfig,
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isOnAdmin = nextUrl.pathname.startsWith("/admin");
-      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
-      const isOnCheckout = nextUrl.pathname.startsWith("/checkout");
+    ...authConfig.callbacks,
+    async jwt({ token, user, account }) {
+      // Call the base JWT callback first
+      const baseToken = await authConfig.callbacks?.jwt?.({ token, user, account } as any);
+      if (baseToken) token = baseToken as any;
 
-      if (isOnAdmin) {
-        if (isLoggedIn && auth?.user?.role === "ADMIN") return true;
-        return false; // Redirect unauthenticated users to login page
-      }
-
-      if (isOnDashboard || isOnCheckout) {
-        if (isLoggedIn) return true;
-        return false; // Redirect unauthenticated users to login page
-      }
-
-      if (isLoggedIn && (nextUrl.pathname === "/login" || nextUrl.pathname === "/register")) {
-        return Response.redirect(new URL("/dashboard", nextUrl));
-      }
-
-      return true;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-        token.id = user.id;
-      }
       return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as string;
-        session.user.id = token.id as string;
-      }
-      return session;
     },
   },
   providers: [
@@ -62,6 +35,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
+          const prisma = await getPrisma();
 
           const user = await prisma.user.findUnique({
             where: { email },
@@ -84,14 +58,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return null;
       },
     }),
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    }),
   ],
 });
-

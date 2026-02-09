@@ -244,12 +244,43 @@ async function main() {
 
   console.log("✅ Reviews created");
 
+  // Create some cart items
+  console.log("🛒 Creating cart items...");
+  
+  await prisma.cart.createMany({
+    data: [
+      {
+        userId: customer1.id,
+        productId: tshirt1.id,
+        quantity: 2,
+      },
+      {
+        userId: customer1.id,
+        productId: jeans1.id,
+        quantity: 1,
+      },
+      {
+        userId: customer2.id,
+        productId: shoes1.id,
+        quantity: 1,
+      },
+      {
+        userId: customer2.id,
+        productId: tshirt2.id,
+        quantity: 3,
+      },
+    ],
+  });
+
+  console.log("✅ Cart items created");
+
   console.log("🎉 Seed completed successfully!");
   console.log("\n📊 Summary:");
   console.log(`   - Users: 3 (1 admin, 2 customers)`);
   console.log(`   - Categories: 3`);
   console.log(`   - Products: 6`);
   console.log(`   - Reviews: 4`);
+  console.log(`   - Cart items: 4`);
   console.log("\n🔑 Login credentials:");
   console.log(`   Admin: admin@flashtrendy.com / password123`);
   console.log(`   Customer: john@example.com / password123`);

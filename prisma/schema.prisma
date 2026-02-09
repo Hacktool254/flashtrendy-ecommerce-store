@@ -12,20 +12,23 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
-  name           String?
-  password       String
-  role           Role      @default(USER)
-  emailVerified  DateTime?
-  image          String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  name          String?
+  phone         String?
+  password      String
+  role          Role      @default(USER)
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   orders         Order[]
   reviews        Review[]
   cart           Cart[]
   addresses      Address[]
+  wishlists      Wishlist[]
   accounts       Account[]
   sessions       Session[]
+  notifications  Notification[]
 
   @@map("users")
 }
@@ -99,7 +102,11 @@ model Product {
   orderItems  OrderItem[]
   reviews     Review[]
   cartItems   Cart[]
+  wishlists   Wishlist[]
 
+  @@index([categoryId])
+  @@index([price])
+  @@index([createdAt])
   @@map("products")
 }
 
@@ -180,6 +187,20 @@ model Address {
   @@map("addresses")
 }
 
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("wishlists")
+}
+
 enum Role {
   USER
   ADMIN
@@ -194,3 +215,46 @@ enum OrderStatus {
   REFUNDED
 }
 
+
+model PasswordResetToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+  @@map("password_reset_tokens")
+}
+
+model SearchLog {
+  id           String   @id @default(cuid())
+  query        String
+  resultsCount Int
+  userId       String?
+  createdAt    DateTime @default(now())
+
+  @@map("search_logs")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  read      Boolean          @default(false)
+  link      String?
+  createdAt DateTime         @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ORDER
+}

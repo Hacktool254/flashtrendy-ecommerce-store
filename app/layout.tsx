@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: "Modern ecommerce store built with Next.js",
 };
 
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -13,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="antialiased">
+        <GoogleAnalytics ga_id={process.env.NEXT_PUBLIC_GA_ID || ""} />
+        {children}
+      </body>
     </html>
   );
 }
