@@ -1,3 +1,4 @@
+// Finalized Homepage - Triggering fresh build
 import { prisma } from "@/lib/prisma";
 import { ProductCard } from "@/components/ProductCard";
 import { CategoryCard } from "@/components/CategoryCard";
