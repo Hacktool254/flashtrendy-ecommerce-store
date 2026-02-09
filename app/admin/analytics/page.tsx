@@ -7,9 +7,11 @@ import { SearchAnalytics } from "@/components/admin/SearchAnalytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type SearchParams = Promise<{
+export const dynamic = "force-dynamic";
+
+type SearchParams = {
     period?: "7days" | "30days" | "month" | "year";
-}>;
+};
 
 interface AdminAnalyticsPageProps {
     searchParams: SearchParams;
@@ -18,13 +20,9 @@ interface AdminAnalyticsPageProps {
 export default async function AdminAnalyticsPage({ searchParams }: AdminAnalyticsPageProps) {
     let period: "7days" | "30days" | "month" | "year" = "7days";
 
-    try {
-        const params = await searchParams;
-        if (params.period && ["7days", "30days", "month", "year"].includes(params.period)) {
-            period = params.period as any;
-        }
-    } catch (e) {
-        console.error("Failed to parse searchParams:", e);
+    const params = searchParams;
+    if (params.period && ["7days", "30days", "month", "year"].includes(params.period)) {
+        period = params.period as any;
     }
 
     let data;
