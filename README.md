@@ -1,5 +1,17 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped for FlashTrendy Ecommerce Store.
 
+## Tech Stack Overview
+
+FlashTrendy is a modern e-commerce platform built with performance and developer experience in mind:
+
+- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS, Shadcn UI
+- **Backend**: Prisma ORM, PostgreSQL, NextAuth.js v5
+- **Features**: Stripe (Payments), Resend (Emails), Uploadthing (File Uploads)
+- **State/Charts**: Zustand, Recharts
+- **Testing**: Jest, React Testing Library, Cypress
+
+For a deeper dive into our architecture and choice of libraries, check out the [Full Tech Stack Documentation](docs/tech-stack.md).
+
 ## Getting Started
 
 First, install the dependencies:
