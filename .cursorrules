@@ -34,6 +34,8 @@
 6. **React Email Rendering**: Use `@react-email/components` and `@react-email/render` for professional email templates. When rendering templates in server actions, use `await render(React.createElement(TemplateComponent, { props }))`.
 7. **Search Tracking**: Always track customer search queries using the `trackSearch` server action in both `SearchBar` (autocomplete) and the main `ProductsPage` (full results) to populate search analytics.
 8. **Prisma Schema Consistency**: When adding new models (like `Notification` or `SearchLog`), ensure relations are correctly defined in both models (e.g., `User` needs to have the relation field) and run `npx prisma generate` immediately to update types.
+9. **GitHub CLI Authentication**: In restricted or headless environments where internal browser tools fail, use `winget install --id GitHub.cli` and `gh auth login -w` (device code) for a reliable authentication flow. Remember to refresh the environment path if the `gh` command is not immediately recognized.
+10. **Git History Organization**: When reorganizing project history into numbered sections (e.g., 3.1 Homepage, 4.1 Admin), it is safer to stage and commit files in project-logical groups rather than complex interactive rebasing if the history is linear and simple.
 
 ## Scratchpad
 
@@ -87,7 +89,7 @@
   - [X] Create protected route middleware
   - [X] Set up admin role-based access control
 
-### 3. Core Features - Customer Side [IN PROGRESS]
+### 3. Core Features - Customer Side [X]
 
 - [X] Home Layout:
   - [X] Create `(home)` folder in `app` directory
@@ -193,7 +195,7 @@
     - [X] Add/remove products
     - [X] Move to cart functionality
 
-### 4. Admin Dashboard [IN PROGRESS]
+### 4. Admin Dashboard [X]
  
  - [X] Admin authentication and authorization:
    - [X] Create `/admin` route group
@@ -307,7 +309,7 @@
     - [X] Edit user information (partially via role update)
     - [X] Delete user account
 
-### 5. Advanced Features [ ]
+### 5. Advanced Features [X]
 
 - [X] Real-time notifications:
   - [X] Toast notifications using Shadcn toast
